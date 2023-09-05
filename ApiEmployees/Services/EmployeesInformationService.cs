@@ -19,7 +19,7 @@ namespace ApiEmployees.Services
             try
             {
                 ServiceResponse dataAccessResponse = await _dataAccess.GetAll();
-                if (dataAccessResponse.status == EnvironmentVariables.SuccessStatus)
+                if (dataAccessResponse != null && dataAccessResponse.status == EnvironmentVariables.SuccessStatus)
                 {
                     string data = JsonConvert.SerializeObject(dataAccessResponse.Data);
                     List<Employee> listOfEmployees = JsonConvert.DeserializeObject<Employee[]>(data).ToList();
@@ -39,7 +39,11 @@ namespace ApiEmployees.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Se genero una excepcion en el servicio GetAllEmployeesInformation {ex.Message}");
-                throw new Exception(ex.Message);
+                return new()
+                {
+                    status = EnvironmentVariables.FailedStatus,
+                    Exception = ex.Message
+                };
             }
         }
 
@@ -49,7 +53,7 @@ namespace ApiEmployees.Services
             {
                 ServiceResponse dataAccessResponse = await _dataAccess.Get(employee_id);
 
-                if (dataAccessResponse.status == EnvironmentVariables.SuccessStatus)
+                if (dataAccessResponse != null && dataAccessResponse.Data != null && dataAccessResponse.status == EnvironmentVariables.SuccessStatus)
                 {
                     string data = JsonConvert.SerializeObject(dataAccessResponse.Data);
                     Employee employee = JsonConvert.DeserializeObject<Employee>(data);
@@ -69,7 +73,11 @@ namespace ApiEmployees.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Se genero una excepcion en el servicio GetEmployeeInformation {ex.Message}");
-                throw new Exception(ex.Message);
+                return new()
+                {
+                    status = EnvironmentVariables.FailedStatus,
+                    Exception = ex.Message
+                };
             }
         }
 
